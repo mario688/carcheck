@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import ReactDOM from "react-dom";
+import ConfidencesBar from "./components/ConfidencesBar";
+import { v4 as uuid } from "uuid";
 import GoogleLogin from "react-google-login";
 import Button from "@atlaskit/button";
-
+import Array from "./components/Array";
 const responseGoogle = (response) => {
   console.log(response);
 };
@@ -10,7 +12,7 @@ const responseGoogle = (response) => {
 export default function App() {
   const [accessToken, setAccessToken] = useState();
   const [imageBase64, setImageBase64] = useState();
-
+  const [infoAboutCar, setInfoAboutCar] = useState();
   const setAccessTokenState = (response) => {
     setAccessToken(response.tokenObj.access_token);
   };
@@ -22,7 +24,7 @@ export default function App() {
       },
     ],
     parameters: {
-      confidenceThreshold: 0.5,
+      confidenceThreshold: 0,
       maxPredictions: 5,
     },
   };
@@ -40,8 +42,38 @@ export default function App() {
       },
       body: JSON.stringify(data),
     });
-    console.log(response.json());
-    // return response.json();
+
+    const responseJson = await response.json();
+    let confidences = [];
+    let partsNames = [];
+    let rows = [];
+
+    confidences = [...responseJson.predictions[0].confidences];
+    partsNames = [...responseJson.predictions[0].displayNames];
+
+    for (let i = 0; i < partsNames.length; i++) {
+      rows.push([partsNames[i], confidences[i]]);
+    }
+
+    rows = rows.map(([part, conf]) => ({
+      key: uuid(),
+      cells: [
+        {
+          key: part,
+          content: part,
+        },
+        {
+          key: conf,
+          content: <ConfidencesBar value={conf} />,
+        },
+        {
+          key: conf,
+          content: conf,
+        },
+      ],
+    }));
+
+    setInfoAboutCar(rows);
   }
 
   const sendPhotoForm = (
@@ -77,5 +109,10 @@ export default function App() {
     />
   );
 
-  return accessToken ? sendPhotoForm : GoogleLoginButton;
+  return (
+    <>
+      {accessToken ? sendPhotoForm : GoogleLoginButton}
+      {infoAboutCar && <Array rows={infoAboutCar} />}
+    </>
+  );
 }
