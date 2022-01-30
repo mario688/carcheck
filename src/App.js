@@ -5,9 +5,20 @@ import { v4 as uuid } from "uuid";
 import GoogleLogin from "react-google-login";
 import Button from "@atlaskit/button";
 import Array from "./components/Array";
+import React, { useState } from 'react';
+import GoogleLogin from 'react-google-login';
+import Button from '@atlaskit/button';
+import styled from 'styled-components';
+
 const responseGoogle = (response) => {
   console.log(response);
 };
+
+const Container = styled.div`
+  text-align: center;
+  position: relative;
+  top: 400px;
+`;
 
 export default function App() {
   const [accessToken, setAccessToken] = useState();
@@ -97,6 +108,7 @@ export default function App() {
     };
     reader.readAsDataURL(file);
   }
+  
 
   const GoogleLoginButton = (
     <GoogleLogin
