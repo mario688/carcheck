@@ -39,7 +39,7 @@ const Array = (props) => (
       rows={props.rows}
       isFixedSize
       defaultSortKey="number"
-      defaultSortOrder="ASC"
+      defaultSortOrder="DESC"
     />
   </Container>
 );

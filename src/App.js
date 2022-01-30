@@ -15,7 +15,12 @@ const responseGoogle = (response) => {
 const Container = styled.div`
   text-align: center;
   position: relative;
-  top: 400px;
+`;
+
+const LoginDiv = styled.div`
+  text-align: center;
+  position: relative;
+  bottom: 150px;
 `;
 
 export default function App() {
@@ -110,7 +115,7 @@ export default function App() {
         onClick={() => postData()}
         isDisabled={!imageBase64}
       >
-        Sprawdz zdjęcie
+        Check Car
       </Button>
     </>
   );
@@ -124,9 +129,10 @@ export default function App() {
     };
     reader.readAsDataURL(file);
   }
-  
 
   const GoogleLoginButton = (
+      <LoginDiv>
+        <h1>Please Sign in!</h1>
     <GoogleLogin
       clientId="930816262472-soqcqsgkaqf4t6e94hecl3il2ubgbhis.apps.googleusercontent.com"
       buttonText="Login"
@@ -135,18 +141,23 @@ export default function App() {
       cookiePolicy={"single_host_origin"}
       scope="https://www.googleapis.com/auth/cloud-platform"
     />
+      </LoginDiv>
   );
 
   return (
-    <Container>
-      {imageUrl && selectedImage && (
+    <>
+      {imageUrl && selectedImage ? (
           <Box mt={2} textAlign="center">
-            <img src={imageUrl} alt={selectedImage.name} height="500px" />
+            <img src={imageUrl} alt={selectedImage.name} height="600px" />
           </Box>
-      )}
-      {accessToken ? sendPhotoForm : GoogleLoginButton}
-      {infoAboutCar && <Array rows={infoAboutCar} />}
-      {isLoading && !infoAboutCar && <Spinner appearance="inherit" /> }
-    </Container>
+      ) :
+          <div style={{height: '600px', width: '200px'}}/>
+      }
+     <Container >
+        {accessToken ? sendPhotoForm : GoogleLoginButton}
+        {infoAboutCar && <Array rows={infoAboutCar} />}
+        {isLoading && !infoAboutCar && <div style={{paddingTop: '50px'}}><Spinner appearance="inherit" size={"xlarge"} /></div> }
+      </Container>
+    </>
   );
 }
