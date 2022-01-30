@@ -1,10 +1,15 @@
 import React from "react";
-
-import { v4 as uuid } from "uuid";
-
+import styled from 'styled-components';
 import DynamicTable from "@atlaskit/dynamic-table";
 
 const caption = "Result for your image";
+
+const Container = styled.div`
+  justifyContent: center;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+`;
 
 const head = {
   cells: [
@@ -27,7 +32,7 @@ const head = {
 };
 
 const Array = (props) => (
-  <div style={{ maxWidth: 800 }}>
+  <Container style={{ maxWidth: 800 }}>
     <DynamicTable
       caption={caption}
       head={head}
@@ -36,7 +41,7 @@ const Array = (props) => (
       defaultSortKey="number"
       defaultSortOrder="ASC"
     />
-  </div>
+  </Container>
 );
 
 export default Array;

@@ -1,14 +1,12 @@
-import React, { useState } from "react";
-import ReactDOM from "react-dom";
 import ConfidencesBar from "./components/ConfidencesBar";
 import { v4 as uuid } from "uuid";
 import GoogleLogin from "react-google-login";
 import Button from "@atlaskit/button";
 import Array from "./components/Array";
-import React, { useState } from 'react';
-import GoogleLogin from 'react-google-login';
-import Button from '@atlaskit/button';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import Box from '@material-ui/core/Box';
+import Spinner from '@atlaskit/spinner';
 
 const responseGoogle = (response) => {
   console.log(response);
@@ -24,6 +22,16 @@ export default function App() {
   const [accessToken, setAccessToken] = useState();
   const [imageBase64, setImageBase64] = useState();
   const [infoAboutCar, setInfoAboutCar] = useState();
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [imageUrl, setImageUrl] = useState(null);
+
+  useEffect(() => {
+    if (selectedImage) {
+      setImageUrl(URL.createObjectURL(selectedImage));
+    }
+  }, [selectedImage]);
+
   const setAccessTokenState = (response) => {
     setAccessToken(response.tokenObj.access_token);
   };
@@ -44,6 +52,8 @@ export default function App() {
     url = "https://us-central1-aiplatform.googleapis.com/v1/projects/930816262472/locations/us-central1/endpoints/4466101882816823296:predict",
     data = myImage
   ) {
+    setInfoAboutCar('');
+    setIsLoading(true);
     console.log("wysyłam");
     const response = await fetch(url, {
       method: "POST",
@@ -89,7 +99,12 @@ export default function App() {
 
   const sendPhotoForm = (
     <>
-      <input type="file" onChange={(e) => encodeImageFileAsURL(e.target)} />
+      <input type="file" style={{ display: 'none' }} id="select-image" onChange={(e) => encodeImageFileAsURL(e.target)} />
+      <label htmlFor="select-image">
+        <Button variant="contained" color="primary" component="span">
+          Upload Image
+        </Button>
+      </label>
       <Button
         appearance="primary"
         onClick={() => postData()}
@@ -101,8 +116,9 @@ export default function App() {
   );
 
   function encodeImageFileAsURL(element) {
-    var file = element.files[0];
-    var reader = new FileReader();
+    setSelectedImage(element.files[0])
+    const file = element.files[0];
+    const reader = new FileReader();
     reader.onloadend = function () {
       setImageBase64(reader.result.replace("data:", "").replace(/^.+,/, ""));
     };
@@ -122,9 +138,15 @@ export default function App() {
   );
 
   return (
-    <>
+    <Container>
+      {imageUrl && selectedImage && (
+          <Box mt={2} textAlign="center">
+            <img src={imageUrl} alt={selectedImage.name} height="500px" />
+          </Box>
+      )}
       {accessToken ? sendPhotoForm : GoogleLoginButton}
       {infoAboutCar && <Array rows={infoAboutCar} />}
-    </>
+      {isLoading && !infoAboutCar && <Spinner appearance="inherit" /> }
+    </Container>
   );
 }
